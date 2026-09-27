@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generator Laporan E-Kinerja Harian Guru</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        @page {
+            size: A4;
+            margin: 15mm;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background-color: #f3f4f6;
+            margin: 0;
+            padding: 0;
+            color: #1e293b;
+        }
+
+        .a4-paper {
+            width: 100%;
+            max-width: 210mm;
+            background: #ffffff !important;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            margin: 0 auto;
+            padding: 15mm;
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 10pt;
+            line-height: 1.5;
+            color: #1e293b;
+            text-align: justify;
+            box-sizing: border-box;
+        }
+
+        .section-box {
+            margin-bottom: 10px;
+            page-break-inside: avoid;
+            break-inside: avoid;
+        }
+
+        .narrative-paragraph {
+            margin-bottom: 8px;
+            text-align: justify;
+            text-justify: inter-word;
+        }
+
+        @media print {
+            body {
+                background-color: transparent;
+            }
+            .a4-paper {
+                box-shadow: none;
+                padding: 0;
+                margin: 0;
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .a4-paper {
+                padding: 10mm;
+            }
+        }
+
+        .identitas-table {
+            width: 100%;
+            table-layout: fixed;
+            border-collapse: collapse;
+        }
+        
+        .identitas-table td {
+            vertical-align: top;
+            padding-bottom: 3px;
+            word-wrap: break-word;
+        }
+        
+        .identitas-label {
+            width: 32%;
+            font-weight: 500;
+        }
+        
+        .identitas-titikdua {
+            width: 4%;
+            text-align: center;
+        }
+        
+        .identitas-value {
+             width: 64%;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #c1c1c1; 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8; 
+        }
+
+        #toast {
+            visibility: hidden;
+            min-width: 250px;
+            background-color: #1a365d;
+            color: #fff;
+            text-align: center;
+            border-radius: 8px;
+            padding: 16px;
+            position: fixed;
+            z-index: 50;
+            left: 50%;
+            bottom: 30px;
+            transform: translateX(-50%);
+            opacity: 0;
+            transition: opacity 0.3s, bottom 0.3s, visibility 0.3s;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        #toast.show {
+            visibility: visible;
+            opacity: 1;
+            bottom: 50px;
+        }
+    </style>
+</head>
+<body class="h-screen overflow-hidden text-gray-800 font-sans">
+    <div class="flex flex-col md:flex-row h-full">
+        
+        <!-- SIDEBAR FORM -->
+        <div class="w-full md:w-[45%] lg:w-[40%] bg-white border-r border-gray-200 h-full overflow-y-auto flex flex-col shadow-lg z-10">
+            <div class="p-6 bg-[#1a365d] text-white sticky top-0 z-20 shadow-md flex justify-between items-center">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                        <!-- Educational Document SVG Logo -->
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-200" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-bold">RuruAlbernEdu</h1>
+                        <p class="text-blue-200 text-xs mt-0.5">Generator Laporan E-Kinerja Harian Guru</p>
+                    </div>
+                </div>
+                <button type="button" id="btnTestFill" class="bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold py-2 px-3 rounded shadow transition flex items-center gap-1.5 cursor-pointer flex-shrink-0">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                    </svg>
+                    Isi Data Contoh
+                </button>
+            </div>
+            
+            <form id="ekinerjaForm" class="p-6 space-y-5 flex-grow">
+                <div class="bg-blue-50/70 p-4 rounded-lg border border-blue-200">
+                    <div class="flex justify-between items-center mb-2">
+                        <label class="block text-sm font-bold text-[#1a365d] uppercase tracking-wider">Google Gemini API Key</label>
+                        <span id="geminiBadge" class="px-2 py-0.5 text-[10px] font-bold rounded-full bg-red-100 text-red-700">Gemini AI Belum Aktif</span>
+                    </div>
+                    <p class="text-xs text-gray-600 mb-2">Masukkan API Key Google AI Studio Anda (disimpan aman di browser/localStorage).</p>
+                    <div class="flex gap-2">
+                        <input type="password" id="in_apiKey" placeholder="Masukkan Gemini API Key..." class="w-full px-3 py-1.5 border border-gray-300 rounded-md focus:ring-blue-900 focus:border-blue-900 text-xs bg-white">
+                        <button type="button" id="btnSaveApiKey" class="bg-[#1a365d] hover:bg-blue-900 text-white text-xs px-3 py-1.5 rounded font-medium flex-shrink-0 cursor-pointer">Simpan</button>
+                    </div>
+                </div>
+
+                <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                    <h2 class="text-sm font-semibold text-[#1a365d] uppercase tracking-wider mb-3">Identitas Pegawai</h2>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Nama Pegawai/Guru</label>
+                            <input type="text" id="in_namaGuru" placeholder="Contoh: Ru'yat, S.Pd., M.Kom., Gr" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-900 focus:border-blue-900 text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">NIP Guru</label>
+                            <input type="text" id="in_nipGuru" placeholder="Contoh: 19800101 200501 1 001" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-900 focus:border-blue-900 text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Jabatan</label>
+                            <input type="text" id="in_jabatan" placeholder="Contoh: Guru Ahli Pertama" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-900 focus:border-blue-900 text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Upload Tanda Tangan Guru (Opsional)</label>
+                            <input type="file" id="in_ttdGuru" accept="image/*" class="w-full text-sm text-gray-700 border border-gray-300 rounded-md bg-white cursor-pointer focus:outline-none file:mr-4 file:py-2 file:px-4 file:rounded-l-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-[#1a365d] hover:file:bg-blue-100">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                    <h2 class="text-sm font-semibold text-[#1a365d] uppercase tracking-wider mb-3">Detail Kegiatan</h2>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Hari/Tanggal</label>
+                            <input type="date" id="in_tanggal" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-900 focus:border-blue-900 text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Waktu Pelaksanaan</label>
+                            <input type="text" id="in_waktu" placeholder="Contoh: 07.00 - 16.00 WIB" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-900 focus:border-blue-900 text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Mata Pelajaran</label>
+                            <input type="text" id="in_mapel" placeholder="Contoh: Instalasi Tenaga Listrik" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-900 focus:border-blue-900 text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Sasaran Kelas/Modul</label>
+                            <input type="text" id="in_kelas" placeholder="Contoh: Kelas XI TL 1" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-900 focus:border-blue-900 text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Rencana Hasil Kerja (RHK)</label>
+                            <select id="in_rhk" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-900 focus:border-blue-900 text-sm bg-white">
+                                <option value="" disabled selected>-- Pilih Rencana Hasil Kerja (RHK) --</option>
+                                <option value="Terlaksananya perencanaan pembelajaran /pembimbingan dalam mewujudkan pembelajaran yang bermutu untuk semua">Terlaksananya perencanaan pembelajaran /pembimbingan dalam mewujudkan pembelajaran yang bermutu untuk semua</option>
+                                <option value="Terlaksananya pembimbingan dan pelatihan dalam mewujudkan pembelajaran yang bermutu untuk semua">Terlaksananya pembimbingan dan pelatihan dalam mewujudkan pembelajaran yang bermutu untuk semua</option>
+                                <option value="Terlaksananya pembelajaran/pembimbingan dalam mewujudkan pembelajaran yang bermutu untuk semua">Terlaksananya pembelajaran/pembimbingan dalam mewujudkan pembelajaran yang bermutu untuk semua</option>
+                                <option value="Terlaksananya penilaian pembelajaran atau evaluasi bimbingan dalam mewujudkan pembelajaran yang bermutu untuk semua">Terlaksananya penilaian pembelajaran atau evaluasi bimbingan dalam mewujudkan pembelajaran yang bermutu untuk semua</option>
+                                <option value="Terlaksananya praktik pembelajaran melalui observasi praktik kinerja yang disepakati bersama Kepala Sekolah yang berfokus pada Perhatian dan Kepedulian">Terlaksananya praktik pembelajaran melalui observasi praktik kinerja yang disepakati bersama Kepala Sekolah yang berfokus pada Perhatian dan Kepedulian</option>
+                                <option value="Terlaksananya pengembangan kompetensi yang meningkatkan pembelajaran yang bermutu untuk semua">Terlaksananya pengembangan kompetensi yang meningkatkan pembelajaran yang bermutu untuk semua</option>
+                                <option value="Terlaksananya tugas tambahan dalam mendukung pembelajaran yang bermutu untuk semua Individu">Terlaksananya tugas tambahan dalam mendukung pembelajaran yang bermutu untuk semua Individu</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Nama Kegiatan</label>
+                            <input type="text" id="in_kegiatan" placeholder="Contoh: Kegiatan Belajar Mengajar" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-900 focus:border-blue-900 text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Topik/Materi</label>
+                            <input type="text" id="in_topik" placeholder="Contoh: Memasang Instalasi Tenaga Listrik 3 Fasa" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-900 focus:border-blue-900 text-sm">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                    <h2 class="text-sm font-semibold text-[#1a365d] uppercase tracking-wider mb-3">Informasi Institusi</h2>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Nama Dinas</label>
+                            <input type="text" id="in_dinas" placeholder="Contoh: DINAS PENDIDIKAN PROVINSI BANTEN" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-900 focus:border-blue-900 text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Nama Sekolah</label>
+                            <input type="text" id="in_sekolah" placeholder="Contoh: SMK NEGERI 1 KOTA TANGERANG SELATAN" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-900 focus:border-blue-900 text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Alamat Sekolah</label>
+                            <input type="text" id="in_alamat" placeholder="Contoh: Jl. Raya Ciater Kel. Ciater Kec. Serpong Kota Tangerang Selatan" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-900 focus:border-blue-900 text-sm">
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Nama Kepala Sekolah</label>
+                                <input type="text" id="in_namaKepsek" placeholder="Contoh: Marta Nurdin S, S.T., M.Pd" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-900 focus:border-blue-900 text-sm">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">NIP Kepala Sekolah</label>
+                                <input type="text" id="in_nipKepsek" placeholder="Contoh: 197875453782726" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-900 focus:border-blue-900 text-sm">
+                            </div>
+                            <div class="md:col-span-2">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Upload Tanda Tangan Kepala Sekolah (Opsional)</label>
+                                <input type="file" id="in_ttdKepsek" accept="image/*" class="w-full text-sm text-gray-700 border border-gray-300 rounded-md bg-white cursor-pointer focus:outline-none file:mr-4 file:py-2 file:px-4 file:rounded-l-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-[#1a365d] hover:file:bg-blue-100">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                    <h2 class="text-sm font-semibold text-[#1a365d] uppercase tracking-wider mb-3">Rincian & Hasil</h2>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Deskripsi Rincian Kegiatan Harian</label>
+                            <textarea id="in_deskripsi" rows="4" placeholder="1. Kegiatan pendahuluan&#10;2. Kegiatan inti, dan&#10;3. Kegiatan penutup" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-900 focus:border-blue-900 text-sm resize-y"></textarea>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Output/Capaian Kinerja Harian</label>
+                            <textarea id="in_output" rows="3" placeholder="Contoh: Siswa mampu memasang instalasi tenaga listrik 3 Fasa." class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-900 focus:border-blue-900 text-sm resize-y"></textarea>
+                        </div>
+                        <div class="pt-2 border-t border-gray-200">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Dokumentasi Foto Kegiatan (Maksimal 4 Foto)</label>
+                            <div class="space-y-3">
+                                <div>
+                                    <label class="block text-xs text-gray-500 mb-1">Foto 1</label>
+                                    <input type="file" id="in_foto1" accept="image/*" class="w-full text-sm text-gray-700 border border-gray-300 rounded-md bg-white cursor-pointer focus:outline-none file:mr-4 file:py-2 file:px-4 file:rounded-l-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-[#1a365d] hover:file:bg-blue-100">
+                                </div>
+                                <div>
+                                    <label class="block text-xs text-gray-500 mb-1">Foto 2 (Opsional)</label>
+                                    <input type="file" id="in_foto2" accept="image/*" class="w-full text-sm text-gray-700 border border-gray-300 rounded-md bg-white cursor-pointer focus:outline-none file:mr-4 file:py-2 file:px-4 file:rounded-l-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-[#1a365d] hover:file:bg-blue-100">
+                                </div>
+                                <div>
+                                    <label class="block text-xs text-gray-500 mb-1">Foto 3 (Opsional)</label>
+                                    <input type="file" id="in_foto3" accept="image/*" class="w-full text-sm text-gray-700 border border-gray-300 rounded-md bg-white cursor-pointer focus:outline-none file:mr-4 file:py-2 file:px-4 file:rounded-l-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-[#1a365d] hover:file:bg-blue-100">
+                                </div>
+                                <div>
+                                    <label class="block text-xs text-gray-500 mb-1">Foto 4 (Opsional)</label>
+                                    <input type="file" id="in_foto4" accept="image/*" class="w-full text-sm text-gray-700 border border-gray-300 rounded-md bg-white cursor-pointer focus:outline-none file:mr-4 file:py-2 file:px-4 file:rounded-l-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-[#1a365d] hover:file:bg-blue-100">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+            
+            <div class="p-6 bg-white border-t sticky bottom-0 z-20">
+                <button type="button" id="btnGenerate" class="w-full bg-[#1a365d] hover:bg-blue-900 text-white font-semibold py-3 px-4 rounded-lg shadow-md transition duration-200 flex justify-center items-center gap-2 cursor-pointer">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clip-rule="evenodd" />
+                    </svg>
+                    Generate Laporan Ekin
+                </button>
+            </div>
+        </div>
+
+        <!-- PREVIEW PANEL -->
+        <div class="w-full md:w-[55%] lg:w-[60%] bg-gray-200 h-full overflow-y-auto relative flex flex-col items-center py-8 px-4 md:px-8">
+            
+            <div id="instructionPanel" class="bg-white p-8 rounded-xl shadow-sm max-w-lg w-full text-center mt-10">
+                <div class="w-16 h-16 bg-blue-50 text-[#1a365d] rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                </div>
+                <h2 class="text-2xl font-bold text-gray-800 mb-2">Petunjuk Penggunaan</h2>
+                <p class="text-gray-500 mb-6">Buat laporan kinerja harian Anda dengan mudah dan cepat. Masukkan API Key Google Gemini Anda dan gunakan tombol kuning <span class="font-semibold text-amber-600">"Isi Data Contoh"</span> untuk uji coba cepat.</p>
+                <ul class="text-left space-y-3 text-sm text-gray-600">
+                    <li class="flex items-start"><span class="bg-[#1a365d] text-white rounded-full w-5 h-5 flex items-center justify-center text-xs mr-3 mt-0.5 flex-shrink-0">1</span> Masukkan Google Gemini API Key pada kolom di sidebar kiri.</li>
+                    <li class="flex items-start"><span class="bg-[#1a365d] text-white rounded-full w-5 h-5 flex items-center justify-center text-xs mr-3 mt-0.5 flex-shrink-0">2</span> Klik tombol "Isi Data Contoh" atau lengkapi formulir manual.</li>
+                    <li class="flex items-start"><span class="bg-[#1a365d] text-white rounded-full w-5 h-5 flex items-center justify-center text-xs mr-3 mt-0.5 flex-shrink-0">3</span> AI (Gemini) akan menyusun narasi akademik profesional secara otomatis dan sinkron berdasarkan RHK, Nama Kegiatan, & Topik.</li>
+                    <li class="flex items-start"><span class="bg-[#1a365d] text-white rounded-full w-5 h-5 flex items-center justify-center text-xs mr-3 mt-0.5 flex-shrink-0">4</span> Klik "Generate Laporan Ekin" dan Export ke PDF Full Color.</li>
+                </ul>
+            </div>
+
+            <div id="actionButtons" class="hidden w-full max-w-[210mm] mb-4 flex flex-wrap gap-2 justify-end sticky top-0 z-30 bg-gray-200 py-2">
+                <button onclick="copyToClipboard()" class="bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 font-medium py-2 px-4 rounded shadow-sm text-sm flex items-center gap-2 transition cursor-pointer">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>
+                    Copy Text
+                </button>
+                <button onclick="exportWord()" class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded shadow-sm text-sm flex items-center gap-2 transition cursor-pointer">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                    Export Word
+                </button>
+                <button onclick="exportPDF()" class="bg-[#1a365d] hover:bg-blue-900 text-white font-medium py-2 px-4 rounded shadow-sm text-sm flex items-center gap-2 transition cursor-pointer">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
+                    Export PDF Full Color
+                </button>
+            </div>
+
+            <div id="reportContainer" class="hidden w-full pb-10">
+                <div id="reportContent" class="a4-paper">
+                    <!-- Kop Surat -->
+                    <div class="text-center border-b-[2px] border-[#1a365d] pb-2 mb-3 section-box">
+                        <div id="out_dinas" class="text-sm font-bold uppercase tracking-wide text-[#1a365d]"></div>
+                        <div id="out_sekolah" class="text-base font-bold uppercase tracking-wider mt-0.5 text-gray-900"></div>
+                        <div id="out_alamat" class="text-[9pt] text-gray-600 mt-0.5"></div>
+                    </div>
+
+                    <!-- Judul Utama (Diletakkan di atas sebelum identitas) -->
+                    <div class="mb-3 text-center font-bold text-[#1a365d] uppercase text-[11pt] tracking-wide section-box underline">
+                        LAPORAN KINERJA HARIAN
+                    </div>
+
+                    <!-- Identitas -->
+                    <div class="mb-3 bg-slate-50 p-2.5 rounded border border-slate-200 section-box">
+                        <table class="identitas-table text-[9.5pt]">
+                            <tr>
+                                <td class="identitas-label text-[#1a365d]">Nama Pegawai</td>
+                                <td class="identitas-titikdua text-[#1a365d]">:</td>
+                                <td id="out_nama" class="identitas-value font-bold text-gray-900"></td>
+                            </tr>
+                            <tr>
+                                <td class="identitas-label text-[#1a365d]">Jabatan</td>
+                                <td class="identitas-titikdua text-[#1a365d]">:</td>
+                                <td id="out_jabatan" class="identitas-value"></td>
+                            </tr>
+                            <tr>
+                                <td class="identitas-label text-[#1a365d]">Mata Pelajaran</td>
+                                <td class="identitas-titikdua text-[#1a365d]">:</td>
+                                <td id="out_mapel" class="identitas-value"></td>
+                            </tr>
+                            <tr>
+                                <td class="identitas-label text-[#1a365d]">Rencana Hasil Kerja</td>
+                                <td class="identitas-titikdua text-[#1a365d]">:</td>
+                                <td id="out_rhk" class="identitas-value"></td>
+                            </tr>
+                            <tr>
+                                <td class="identitas-label text-[#1a365d]">Hari/Tanggal</td>
+                                <td class="identitas-titikdua text-[#1a365d]">:</td>
+                                <td id="out_tanggal" class="identitas-value"></td>
+                            </tr>
+                            <tr>
+                                <td class="identitas-label text-[#1a365d]">Waktu</td>
+                                <td class="identitas-titikdua text-[#1a365d]">:</td>
+                                <td id="out_waktu" class="identitas-value"></td>
+                            </tr>
+                            <tr>
+                                <td class="identitas-label text-[#1a365d]">Sasaran Kelas</td>
+                                <td class="identitas-titikdua text-[#1a365d]">:</td>
+                                <td id="out_kelas" class="identitas-value"></td>
+                            </tr>
+                            <tr>
+                                <td class="identitas-label text-[#1a365d]">Nama Kegiatan</td>
+                                <td class="identitas-titikdua text-[#1a365d]">:</td>
+                                <td id="out_kegiatan" class="identitas-value"></td>
+                            </tr>
+                            <tr>
+                                <td class="identitas-label text-[#1a365d]">Topik/Materi</td>
+                                <td class="identitas-titikdua text-[#1a365d]">:</td>
+                                <td id="out_topik" class="identitas-value"></td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <div id="dynamicNarrativeContainer" class="space-y-2 mb-3 text-justify leading-relaxed">
+                        <div class="section-box">
+                            <h3 class="font-bold mb-0.5 text-[#1a365d] text-[10pt]">A. LATAR BELAKANG</h3>
+                            <div id="out_bab1"><p class="italic text-gray-400">Menghasilkan narasi AI...</p></div>
+                        </div>
+                        <div class="section-box">
+                            <h3 class="font-bold mb-0.5 text-[#1a365d] text-[10pt]">B. TUJUAN KEGIATAN</h3>
+                            <div id="out_bab2"><p class="italic text-gray-400">Menghasilkan narasi AI...</p></div>
+                        </div>
+                        <div class="section-box">
+                            <h3 class="font-bold mb-0.5 text-[#1a365d] text-[10pt]">C. LANDASAN HUKUM</h3>
+                            <div id="out_bab3"><p class="italic text-gray-400">Menghasilkan narasi AI...</p></div>
+                        </div>
+                        <div class="section-box">
+                            <h3 class="font-bold mb-0.5 text-[#1a365d] text-[10pt]">D. TINDAK LANJUT</h3>
+                            <div id="out_bab4"><p class="italic text-gray-400">Menghasilkan narasi AI...</p></div>
+                        </div>
+                        <div class="section-box">
+                            <h3 class="font-bold mb-0.5 text-[#1a365d] text-[10pt]">E. PENUTUP</h3>
+                            <div id="out_bab5"><p class="italic text-gray-400">Menghasilkan narasi AI...</p></div>
+                        </div>
+                    </div>
+
+                    <!-- Lampiran -->
+                    <div class="mb-3 section-box">
+                        <h3 class="font-bold mb-0.5 text-[#1a365d] text-[10pt]">LAMPIRAN 1: RINCIAN KEGIATAN HARIAN</h3>
+                        <div class="border border-slate-300 p-2.5 min-h-[50px] whitespace-pre-wrap bg-slate-50/50 rounded text-[9.5pt]" id="out_deskripsi"></div>
+                    </div>
+
+                    <div class="mb-3 section-box">
+                        <h3 class="font-bold mb-0.5 text-[#1a365d] text-[10pt]">LAMPIRAN 2: OUTPUT / CAPAIAN KINERJA</h3>
+                        <div class="border border-slate-300 p-2.5 min-h-[45px] whitespace-pre-wrap bg-slate-50/50 rounded text-[9.5pt]" id="out_output"></div>
+                    </div>
+
+                    <div class="mb-4 section-box">
+                        <h3 class="font-bold mb-0.5 text-[#1a365d] text-[10pt]">LAMPIRAN 3: DOKUMENTASI / FOTO KEGIATAN</h3>
+                        <div id="out_foto_container" class="border-2 border-dashed border-slate-300 p-2 min-h-[140px] flex items-center justify-center bg-slate-50/20 rounded">
+                            <span id="out_foto_placeholder" class="text-gray-400 italic text-[9.5pt]">[Area Tempel Foto Bukti Fisik]</span>
+                            <div id="out_foto_grid" class="hidden grid-cols-1 md:grid-cols-2 gap-2 w-full">
+                                <img id="out_img1" class="hidden max-h-44 object-contain mx-auto border border-slate-200 p-1 bg-white shadow-xs rounded" alt="Dokumentasi 1">
+                                <img id="out_img2" class="hidden max-h-44 object-contain mx-auto border border-slate-200 p-1 bg-white shadow-xs rounded" alt="Dokumentasi 2">
+                                <img id="out_img3" class="hidden max-h-44 object-contain mx-auto border border-slate-200 p-1 bg-white shadow-xs rounded" alt="Dokumentasi 3">
+                                <img id="out_img4" class="hidden max-h-44 object-contain mx-auto border border-slate-200 p-1 bg-white shadow-xs rounded" alt="Dokumentasi 4">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tanda Tangan -->
+                    <table class="w-full mt-4 pt-2 section-box" style="border-collapse: collapse; page-break-inside: avoid; break-inside: avoid;">
+                        <tr>
+                            <td class="text-center" style="width: 50%; vertical-align: top;">
+                                <p class="text-gray-700 text-[9.5pt]">Mengetahui,</p>
+                                <p class="font-medium text-gray-800 text-[9.5pt]">Kepala Sekolah</p>
+                                <div class="h-16 flex items-center justify-center my-0.5 relative">
+                                    <img id="out_img_ttdKepsek" class="hidden max-h-full max-w-full object-contain mix-blend-multiply z-10 mx-auto" alt="Tanda Tangan Kepsek">
+                                </div>
+                                <p class="font-bold underline text-[#1a365d] text-[9.5pt]" id="out_namaKepsek"></p>
+                                <p class="text-gray-700 text-[9pt]">NIP. <span id="out_nipKepsek"></span></p>
+                            </td>
+                            <td class="text-center" style="width: 50%; vertical-align: top;">
+                                <p class="text-gray-700 text-[9.5pt]">Dibuat Oleh,</p>
+                                <p class="font-medium text-gray-800 text-[9.5pt]">Guru Mata Pelajaran</p>
+                                <div class="h-16 flex items-center justify-center my-0.5 relative">
+                                    <img id="out_img_ttdGuru" class="hidden max-h-full max-w-full object-contain mix-blend-multiply z-10 mx-auto" alt="Tanda Tangan Guru">
+                                </div>
+                                <p class="font-bold underline text-[#1a365d] text-[9.5pt]" id="out_namaGuru_ttd"></p>
+                                <p class="text-gray-700 text-[9pt]">NIP. <span id="out_nipGuru_ttd"></span></p>
+                            </td>
+                        </tr>
+                    </table>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast">Pesan Notifikasi</div>
+
+    <script>
+        window.addEventListener('error', function(e) {
+            console.error("Global Error Caught:", e.message);
+        });
+
+        window.addEventListener('unhandledrejection', function(event) {
+            event.preventDefault();
+        });
+
+        function showToast(message) {
+            const toast = document.getElementById("toast");
+            toast.innerText = message;
+            toast.className = "show";
+            setTimeout(function(){ toast.className = toast.className.replace("show", ""); }, 3000);
+        }
+
+        // --- API KEY MANAGEMENT ---
+        function getApiKey() {
+            return localStorage.getItem('gemini_api_key') || '';
+        }
+
+        function updateApiKeyBadge() {
+            const key = getApiKey();
+            const badge = document.getElementById('geminiBadge');
+            const input = document.getElementById('in_apiKey');
+            if (key) {
+                badge.innerText = "Gemini AI Aktif";
+                badge.className = "px-2 py-0.5 text-[10px] font-bold rounded-full bg-emerald-100 text-emerald-700";
+                input.value = key;
+            } else {
+                badge.innerText = "Gemini AI Belum Aktif";
+                badge.className = "px-2 py-0.5 text-[10px] font-bold rounded-full bg-red-100 text-red-700";
+            }
+        }
+
+        document.getElementById('btnSaveApiKey').addEventListener('click', function() {
+            const val = document.getElementById('in_apiKey').value.trim();
+            if (!val) {
+                showToast('API Key tidak boleh kosong.');
+                return;
+            }
+            localStorage.setItem('gemini_api_key', val);
+            updateApiKeyBadge();
+            showToast('Gemini API Key berhasil disimpan di browser!');
+        });
+
+        window.addEventListener('DOMContentLoaded', () => {
+            updateApiKeyBadge();
+        });
+
+        const getVal = (id) => {
+            const el = document.getElementById(id);
+            if (!el) return '[Belum Diisi]';
+            return el.value.trim() || '[Belum Diisi]';
+        };
+
+        function formatDateIndo(dateString) {
+            if (!dateString) return '[Belum Diisi]';
+            const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+            const months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+            
+            const dateParts = dateString.split('-');
+            if (dateParts.length !== 3) return dateString;
+
+            const dateObj = new Date(dateParts[0], dateParts[1] - 1, dateParts[2]);
+            if (isNaN(dateObj.getTime())) return dateString;
+
+            const dayName = days[dateObj.getDay()];
+            const dateNum = dateObj.getDate();
+            const monthName = months[dateObj.getMonth()];
+            const year = dateObj.getFullYear();
+
+            return `${dayName}, ${dateNum} ${monthName} ${year}`;
+        }
+
+        function readFileAsDataURL(file) {
+            return new Promise((resolve, reject) => {
+                if (!file) return resolve(null);
+                const reader = new FileReader();
+                reader.onload = (e) => resolve(e.target.result);
+                reader.onerror = () => reject(new Error("Gagal membaca file gambar."));
+                reader.readAsDataURL(file);
+            });
+        }
+
+        document.getElementById('btnTestFill').addEventListener('click', function() {
+            document.getElementById('in_namaGuru').value = "Ru'yat, S.Pd., M.Kom., Gr";
+            document.getElementById('in_nipGuru').value = "19800101 200501 1 001";
+            document.getElementById('in_jabatan').value = "Guru Ahli Pertama";
+            
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('in_tanggal').value = today;
+            
+            document.getElementById('in_waktu').value = "07.00 - 16.00 WIB";
+            document.getElementById('in_mapel').value = "Instalasi Tenaga Listrik";
+            document.getElementById('in_kelas').value = "Kelas XI TL 1";
+            
+            const rhkSelect = document.getElementById('in_rhk');
+            rhkSelect.selectedIndex = 3; 
+            
+            document.getElementById('in_kegiatan').value = "Kegiatan Belajar Mengajar";
+            document.getElementById('in_topik').value = "Memasang Instalasi Tenaga Listrik 3 Fasa";
+            
+            document.getElementById('in_dinas').value = "DINAS PENDIDIKAN PROVINSI BANTEN";
+            document.getElementById('in_sekolah').value = "SMK NEGERI 1 KOTA TANGERANG SELATAN";
+            document.getElementById('in_alamat').value = "Jl. Raya Ciater Kel. Ciater Kec. Serpong Kota Tangerang Selatan";
+            
+            document.getElementById('in_namaKepsek').value = "Marta Nurdin S, S.T., M.Pd";
+            document.getElementById('in_nipKepsek').value = "197875453782726";
+            
+            document.getElementById('in_deskripsi').value = "1. Kegiatan pendahuluan: Melakukan presensi, apersepsi, dan memotivasi peserta didik.\n2. Kegiatan inti: Menyampaikan materi pembelajaran, demonstrasi praktik pemasangan rangkaian instalasi listrik 3 fasa, dan diskusi kelompok.\n3. Kegiatan penutup: Refleksi pembelajaran, penarikan kesimpulan, dan evaluasi singkat.";
+            document.getElementById('in_output').value = "Siswa mampu memasang instalasi tenaga listrik 3 Fasa secara mandiri dan aman sesuai standar kelayakan operasional.";
+            
+            showToast('Data contoh berhasil diisi! Silakan klik Generate Laporan Ekin.');
+        });
+
+        async function fetchAINarratives(data) {
+            const apiKey = getApiKey();
+            const systemPrompt = "Anda adalah asisten AI profesional bidang pendidikan dan administrasi guru. Tugas Anda adalah membuat narasi laporan kinerja harian guru dalam 5 bagian terpisah (Bagian A: Latar Belakang, Bagian B: Tujuan Kegiatan, Bagian C: Landasan Hukum, Bagian D: Tindak Lanjut, Bagian E: Penutup). NARASI WAJIB DISESUAIKAN SECARA SPESIFIK DAN SINKRON DENGAN PERUBAHAN ISI DARI: Rencana Hasil Kerja (RHK), Nama Kegiatan, Topik/Materi, dan Sasaran Kelas yang diinputkan. Setiap bagian harus profesional, akademis, mengalir, panjangnya maksimal 250 kata, dan TIDAK BOLEH menggunakan templat kaku. Format respons HARUS berupa JSON object murni dengan kunci: A, B, C, D, E yang masing-masing berisi string paragraf naratif.";
+            
+            const userPrompt = `Buatkan narasi laporan kinerja harian guru yang disesuaikan secara spesifik dan sinkron berdasarkan detail berikut:
+- Rencana Hasil Kerja (RHK): ${data.rhk}
+- Nama Kegiatan: ${data.kegiatan}
+- Topik/Materi: ${data.topik}
+- Sasaran Kelas: ${data.kelas}
+- Mata Pelajaran: ${data.mapel}
+- Nama Guru: ${data.namaGuru}`;
+
+            const payload = {
+                contents: [{ parts: [{ text: userPrompt }] }],
+                systemInstruction: { parts: [{ text: systemPrompt }] },
+                generationConfig: {
+                    responseMimeType: "application/json",
+                    responseSchema: {
+                        type: "OBJECT",
+                        properties: {
+                            "A": { "type": "STRING" },
+                            "B": { "type": "STRING" },
+                            "C": { "type": "STRING" },
+                            "D": { "type": "STRING" },
+                            "E": { "type": "STRING" }
+                        },
+                        "propertyOrdering": ["A", "B", "C", "D", "E"]
+                    }
+                }
+            };
+
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+
+            for (let attempt = 0; attempt < 3; attempt++) {
+                try {
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    const result = await response.json();
+                    const candidate = result.candidates?.[0];
+                    if (candidate && candidate.content?.parts?.[0]?.text) {
+                        const parsed = JSON.parse(candidate.content.parts[0].text);
+                        return {
+                            A: `<p class="narrative-paragraph">${parsed.A}</p>`,
+                            B: `<p class="narrative-paragraph">${parsed.B}</p>`,
+                            C: `<p class="narrative-paragraph">${parsed.C}</p>`,
+                            D: `<p class="narrative-paragraph">${parsed.D}</p>`,
+                            E: `<p class="narrative-paragraph">${parsed.E}</p>`
+                        };
+                    }
+                } catch (e) {
+                    await new Promise(r => setTimeout(r, Math.pow(2, attempt) * 1000));
+                }
+            }
+
+            // Fallback jika API gagal atau kunci belum diisi
+            return {
+                A: `<p class="narrative-paragraph">Pelaksanaan kegiatan ${data.kegiatan} dengan topik ${data.topik} pada mata pelajaran ${data.mapel} di ${data.kelas} merupakan bentuk nyata implementasi RHK "${data.rhk}". Kegiatan ini dirancang untuk menciptakan lingkungan belajar yang interaktif dan berpusat pada siswa.</p>`,
+                B: `<p class="narrative-paragraph">Tujuan kegiatan ${data.kegiatan} mengenai ${data.topik} ini adalah mencapai target RHK yang telah ditetapkan, memastikan pemahaman mendalam peserta didik di ${data.kelas}, serta meningkatkan keaktifan belajar secara optimal.</p>`,
+                C: `<p class="narrative-paragraph">Pelaksanaan kegiatan ini berlandaskan pada ketentuan Undang-Undang Sistem Pendidikan Nasional serta standar proses pembelajaran yang relevan dengan ${data.kegiatan}.</p>`,
+                D: `<p class="narrative-paragraph">Berdasarkan hasil kegiatan ${data.kegiatan} dengan topik ${data.topik} hari ini, akan dilakukan evaluasi serta tindak lanjut berupa program pengayaan atau remedial sesuai kebutuhan siswa di ${data.kelas}.</p>`,
+                E: `<p class="narrative-paragraph">Laporan harian pelaksanaan ${data.kegiatan} ini disusun sebagai bentuk pertanggungjawaban profesional ${data.namaGuru} dalam mendukung mutu pendidikan di satuan pendidikan.</p>`
+            };
+        }
+
+        document.getElementById('btnGenerate').addEventListener('click', async function() {
+            try {
+                const rawTanggal = document.getElementById('in_tanggal').value;
+                const formattedTanggal = rawTanggal ? formatDateIndo(rawTanggal) : '[Belum Diisi]';
+
+                const data = {
+                    namaGuru: getVal('in_namaGuru'),
+                    nipGuru: getVal('in_nipGuru'),
+                    jabatan: getVal('in_jabatan'),
+                    tanggal: formattedTanggal,
+                    waktu: getVal('in_waktu'),
+                    mapel: getVal('in_mapel'),
+                    kelas: getVal('in_kelas'),
+                    rhk: getVal('in_rhk'),
+                    kegiatan: getVal('in_kegiatan'),
+                    topik: getVal('in_topik'),
+                    dinas: getVal('in_dinas'),
+                    sekolah: getVal('in_sekolah'),
+                    alamat: getVal('in_alamat'),
+                    namaKepsek: getVal('in_namaKepsek'),
+                    nipKepsek: getVal('in_nipKepsek'),
+                    deskripsi: getVal('in_deskripsi'),
+                    output: getVal('in_output')
+                };
+
+                document.getElementById('out_dinas').innerText = data.dinas;
+                document.getElementById('out_sekolah').innerText = data.sekolah;
+                document.getElementById('out_alamat').innerText = data.alamat;
+                
+                document.getElementById('out_nama').innerText = data.namaGuru;
+                document.getElementById('out_jabatan').innerText = data.jabatan;
+                document.getElementById('out_mapel').innerText = data.mapel;
+                document.getElementById('out_rhk').innerText = data.rhk;
+                document.getElementById('out_tanggal').innerText = data.tanggal;
+                document.getElementById('out_waktu').innerText = data.waktu;
+                document.getElementById('out_kelas').innerText = data.kelas;
+                document.getElementById('out_kegiatan').innerText = data.kegiatan;
+                document.getElementById('out_topik').innerText = data.topik;
+
+                const apiKey = getApiKey();
+                if (apiKey) {
+                    showToast('Gemini AI sedang menyusun narasi laporan yang sinkron...');
+                } else {
+                    showToast('API Key belum diisi, menggunakan narasi cadangan.');
+                }
+                
+                const narasi = await fetchAINarratives(data);
+                
+                document.getElementById('out_bab1').innerHTML = narasi.A;
+                document.getElementById('out_bab2').innerHTML = narasi.B;
+                document.getElementById('out_bab3').innerHTML = narasi.C;
+                document.getElementById('out_bab4').innerHTML = narasi.D;
+                document.getElementById('out_bab5').innerHTML = narasi.E;
+
+                document.getElementById('out_deskripsi').innerText = data.deskripsi;
+                document.getElementById('out_output').innerText = data.output;
+
+                document.getElementById('out_namaKepsek').innerText = data.namaKepsek;
+                document.getElementById('out_nipKepsek').innerText = data.nipKepsek;
+                document.getElementById('out_namaGuru_ttd').innerText = data.namaGuru;
+                document.getElementById('out_nipGuru_ttd').innerText = data.nipGuru;
+
+                const file1 = document.getElementById('in_foto1').files[0];
+                const file2 = document.getElementById('in_foto2').files[0];
+                const file3 = document.getElementById('in_foto3').files[0];
+                const file4 = document.getElementById('in_foto4').files[0];
+                const fileTtdGuru = document.getElementById('in_ttdGuru').files[0];
+                const fileTtdKepsek = document.getElementById('in_ttdKepsek').files[0];
+
+                const [imgData1, imgData2, imgData3, imgData4, imgTtdGuru, imgTtdKepsek] = await Promise.all([
+                    readFileAsDataURL(file1),
+                    readFileAsDataURL(file2),
+                    readFileAsDataURL(file3),
+                    readFileAsDataURL(file4),
+                    readFileAsDataURL(fileTtdGuru),
+                    readFileAsDataURL(fileTtdKepsek)
+                ]);
+
+                const imgEl1 = document.getElementById('out_img1');
+                const imgEl2 = document.getElementById('out_img2');
+                const imgEl3 = document.getElementById('out_img3');
+                const imgEl4 = document.getElementById('out_img4');
+                const placeholder = document.getElementById('out_foto_placeholder');
+                const container = document.getElementById('out_foto_container');
+                const grid = document.getElementById('out_foto_grid');
+
+                const blankImage = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
+
+                imgEl1.classList.add('hidden'); imgEl1.src = blankImage;
+                imgEl2.classList.add('hidden'); imgEl2.src = blankImage;
+                imgEl3.classList.add('hidden'); imgEl3.src = blankImage;
+                imgEl4.classList.add('hidden'); imgEl4.src = blankImage;
+                placeholder.classList.remove('hidden');
+                grid.classList.add('hidden');
+                grid.classList.remove('grid');
+                container.classList.add('items-center', 'justify-center');
+
+                if (imgData1 || imgData2 || imgData3 || imgData4) {
+                    placeholder.classList.add('hidden');
+                    container.classList.remove('items-center', 'justify-center');
+                    grid.classList.remove('hidden');
+                    grid.classList.add('grid');
+                    
+                    let activeImagesCount = 0;
+                    if (imgData1) { imgEl1.src = imgData1; imgEl1.classList.remove('hidden'); activeImagesCount++; }
+                    if (imgData2) { imgEl2.src = imgData2; imgEl2.classList.remove('hidden'); activeImagesCount++; }
+                    if (imgData3) { imgEl3.src = imgData3; imgEl3.classList.remove('hidden'); activeImagesCount++; }
+                    if (imgData4) { imgEl4.src = imgData4; imgEl4.classList.remove('hidden'); activeImagesCount++; }
+                    
+                    if(activeImagesCount === 1) {
+                        grid.classList.replace('md:grid-cols-2', 'md:grid-cols-1');
+                    } else {
+                        grid.classList.replace('md:grid-cols-1', 'md:grid-cols-2');
+                    }
+                }
+
+                const elTtdGuru = document.getElementById('out_img_ttdGuru');
+                if (imgTtdGuru) {
+                    elTtdGuru.src = imgTtdGuru;
+                    elTtdGuru.classList.remove('hidden');
+                } else {
+                    elTtdGuru.classList.add('hidden');
+                    elTtdGuru.src = blankImage;
+                }
+
+                const elTtdKepsek = document.getElementById('out_img_ttdKepsek');
+                if (imgTtdKepsek) {
+                    elTtdKepsek.src = imgTtdKepsek;
+                    elTtdKepsek.classList.remove('hidden');
+                } else {
+                    elTtdKepsek.classList.add('hidden');
+                    elTtdKepsek.src = blankImage;
+                }
+
+                document.getElementById('instructionPanel').classList.add('hidden');
+                document.getElementById('actionButtons').classList.remove('hidden');
+                document.getElementById('reportContainer').classList.remove('hidden');
+
+                document.querySelector('.bg-gray-200').scrollTo({ top: 0, behavior: 'smooth' });
+                showToast('Laporan berhasil di-generate dengan sukses!');
+            } catch (error) {
+                console.error("Kesalahan:", error);
+                showToast('Gagal memproses: ' + error.message);
+            }
+        });
+
+        async function copyToClipboard() {
+            try {
+                const content = document.getElementById('reportContent').innerText;
+                if (navigator.clipboard && window.isSecureContext) {
+                    await navigator.clipboard.writeText(content);
+                } else {
+                    const textarea = document.createElement("textarea");
+                    textarea.value = content;
+                    document.body.appendChild(textarea);
+                    textarea.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(textarea);
+                }
+                showToast('Teks laporan berhasil disalin!');
+            } catch (err) {
+                showToast('Gagal menyalin teks.');
+            }
+        }
+
+        function exportWord() {
+            try {
+                const preHtml = "<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'><head><meta charset='utf-8'><title>Laporan E-Kinerja</title></head><body>";
+                const postHtml = "</body></html>";
+                const htmlContext = document.getElementById('reportContent').innerHTML;
+                
+                const html = preHtml + htmlContext + postHtml;
+                const url = 'data:application/vnd.ms-word;charset=utf-8,' + encodeURIComponent(html);
+                const downloadLink = document.createElement("a");
+                
+                document.body.appendChild(downloadLink);
+                downloadLink.href = url;
+                downloadLink.download = 'Laporan_E-Kinerja_Harian.doc';
+                downloadLink.click();
+                document.body.removeChild(downloadLink);
+                showToast('Laporan diunduh sebagai Word!');
+            } catch(error) {
+                showToast('Gagal export ke Word.');
+            }
+        }
+
+        function exportPDF() {
+            showToast('Menyiapkan file PDF Full Color...');
+            const element = document.getElementById('reportContent');
+            
+            const opt = {
+                margin:       [15, 15, 15, 15],
+                filename:     'Laporan_E-Kinerja_Harian_FullColor.pdf',
+                image:        { type: 'jpeg', quality: 1.0 },
+                html2canvas:  { scale: 2, useCORS: true, logging: false, allowTaint: true },
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+
+            html2pdf().set(opt).from(element).save().then(() => {
+                showToast('PDF Full Color berhasil diunduh!');
+            }).catch(err => {
+                showToast('Gagal membuat PDF.');
+            });
+        }
+    </script>
+</body>
+</html>
