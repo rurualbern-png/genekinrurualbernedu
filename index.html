@@ -238,6 +238,16 @@
                 <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
                     <h2 class="text-sm font-semibold text-[#1a365d] uppercase tracking-wider mb-3">Informasi Institusi</h2>
                     <div class="space-y-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Upload Logo Dinas (Kiri)</label>
+                                <input type="file" id="in_logoDinas" accept="image/*" class="w-full text-sm text-gray-700 border border-gray-300 rounded-md bg-white cursor-pointer focus:outline-none file:mr-4 file:py-2 file:px-4 file:rounded-l-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-[#1a365d] hover:file:bg-blue-100">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Upload Logo Sekolah (Kanan)</label>
+                                <input type="file" id="in_logoSekolah" accept="image/*" class="w-full text-sm text-gray-700 border border-gray-300 rounded-md bg-white cursor-pointer focus:outline-none file:mr-4 file:py-2 file:px-4 file:rounded-l-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-[#1a365d] hover:file:bg-blue-100">
+                            </div>
+                        </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Nama Dinas</label>
                             <input type="text" id="in_dinas" placeholder="Contoh: DINAS PENDIDIKAN PROVINSI BANTEN" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-900 focus:border-blue-900 text-sm">
@@ -281,21 +291,49 @@
                         <div class="pt-2 border-t border-gray-200">
                             <label class="block text-sm font-medium text-gray-700 mb-2">Dokumentasi Foto Kegiatan (Maksimal 4 Foto)</label>
                             <div class="space-y-3">
-                                <div>
-                                    <label class="block text-xs text-gray-500 mb-1">Foto 1</label>
-                                    <input type="file" id="in_foto1" accept="image/*" class="w-full text-sm text-gray-700 border border-gray-300 rounded-md bg-white cursor-pointer focus:outline-none file:mr-4 file:py-2 file:px-4 file:rounded-l-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-[#1a365d] hover:file:bg-blue-100">
+                                <div class="flex items-center gap-2">
+                                    <div class="flex-grow">
+                                        <label class="block text-xs text-gray-500 mb-1">Foto 1</label>
+                                        <input type="file" id="in_foto1" accept="image/*" class="w-full text-sm text-gray-700 border border-gray-300 rounded-md bg-white cursor-pointer focus:outline-none file:mr-4 file:py-2 file:px-4 file:rounded-l-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-[#1a365d] hover:file:bg-blue-100">
+                                    </div>
+                                    <button type="button" onclick="document.getElementById('in_foto1').value=''" class="mt-5 text-red-500 hover:text-red-700 p-2 rounded-md hover:bg-red-50 transition-colors" title="Hapus Foto">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                                        </svg>
+                                    </button>
                                 </div>
-                                <div>
-                                    <label class="block text-xs text-gray-500 mb-1">Foto 2 (Opsional)</label>
-                                    <input type="file" id="in_foto2" accept="image/*" class="w-full text-sm text-gray-700 border border-gray-300 rounded-md bg-white cursor-pointer focus:outline-none file:mr-4 file:py-2 file:px-4 file:rounded-l-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-[#1a365d] hover:file:bg-blue-100">
+                                <div class="flex items-center gap-2">
+                                    <div class="flex-grow">
+                                        <label class="block text-xs text-gray-500 mb-1">Foto 2 (Opsional)</label>
+                                        <input type="file" id="in_foto2" accept="image/*" class="w-full text-sm text-gray-700 border border-gray-300 rounded-md bg-white cursor-pointer focus:outline-none file:mr-4 file:py-2 file:px-4 file:rounded-l-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-[#1a365d] hover:file:bg-blue-100">
+                                    </div>
+                                    <button type="button" onclick="document.getElementById('in_foto2').value=''" class="mt-5 text-red-500 hover:text-red-700 p-2 rounded-md hover:bg-red-50 transition-colors" title="Hapus Foto">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                                        </svg>
+                                    </button>
                                 </div>
-                                <div>
-                                    <label class="block text-xs text-gray-500 mb-1">Foto 3 (Opsional)</label>
-                                    <input type="file" id="in_foto3" accept="image/*" class="w-full text-sm text-gray-700 border border-gray-300 rounded-md bg-white cursor-pointer focus:outline-none file:mr-4 file:py-2 file:px-4 file:rounded-l-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-[#1a365d] hover:file:bg-blue-100">
+                                <div class="flex items-center gap-2">
+                                    <div class="flex-grow">
+                                        <label class="block text-xs text-gray-500 mb-1">Foto 3 (Opsional)</label>
+                                        <input type="file" id="in_foto3" accept="image/*" class="w-full text-sm text-gray-700 border border-gray-300 rounded-md bg-white cursor-pointer focus:outline-none file:mr-4 file:py-2 file:px-4 file:rounded-l-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-[#1a365d] hover:file:bg-blue-100">
+                                    </div>
+                                    <button type="button" onclick="document.getElementById('in_foto3').value=''" class="mt-5 text-red-500 hover:text-red-700 p-2 rounded-md hover:bg-red-50 transition-colors" title="Hapus Foto">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                                        </svg>
+                                    </button>
                                 </div>
-                                <div>
-                                    <label class="block text-xs text-gray-500 mb-1">Foto 4 (Opsional)</label>
-                                    <input type="file" id="in_foto4" accept="image/*" class="w-full text-sm text-gray-700 border border-gray-300 rounded-md bg-white cursor-pointer focus:outline-none file:mr-4 file:py-2 file:px-4 file:rounded-l-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-[#1a365d] hover:file:bg-blue-100">
+                                <div class="flex items-center gap-2">
+                                    <div class="flex-grow">
+                                        <label class="block text-xs text-gray-500 mb-1">Foto 4 (Opsional)</label>
+                                        <input type="file" id="in_foto4" accept="image/*" class="w-full text-sm text-gray-700 border border-gray-300 rounded-md bg-white cursor-pointer focus:outline-none file:mr-4 file:py-2 file:px-4 file:rounded-l-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-[#1a365d] hover:file:bg-blue-100">
+                                    </div>
+                                    <button type="button" onclick="document.getElementById('in_foto4').value=''" class="mt-5 text-red-500 hover:text-red-700 p-2 rounded-md hover:bg-red-50 transition-colors" title="Hapus Foto">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                                        </svg>
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -350,10 +388,18 @@
             <div id="reportContainer" class="hidden w-full pb-10">
                 <div id="reportContent" class="a4-paper">
                     <!-- Kop Surat -->
-                    <div class="text-center border-b-[2px] border-[#1a365d] pb-2 mb-3 section-box">
-                        <div id="out_dinas" class="text-sm font-bold uppercase tracking-wide text-[#1a365d]"></div>
-                        <div id="out_sekolah" class="text-base font-bold uppercase tracking-wider mt-0.5 text-gray-900"></div>
-                        <div id="out_alamat" class="text-[9pt] text-gray-600 mt-0.5"></div>
+                    <div class="flex items-center justify-between border-b-[2px] border-[#1a365d] pb-2 mb-3 section-box">
+                        <div class="w-[20mm] h-[22mm] flex items-center justify-center flex-shrink-0">
+                            <img id="out_img_logoDinas" class="hidden max-h-full max-w-full object-contain mix-blend-multiply" alt="Logo Dinas">
+                        </div>
+                        <div class="flex-grow text-center px-3">
+                            <div id="out_dinas" class="text-sm font-bold uppercase tracking-wide text-[#1a365d]"></div>
+                            <div id="out_sekolah" class="text-base font-bold uppercase tracking-wider mt-0.5 text-gray-900"></div>
+                            <div id="out_alamat" class="text-[9pt] text-gray-600 mt-0.5"></div>
+                        </div>
+                        <div class="w-[20mm] h-[22mm] flex items-center justify-center flex-shrink-0">
+                            <img id="out_img_logoSekolah" class="hidden max-h-full max-w-full object-contain mix-blend-multiply" alt="Logo Sekolah">
+                        </div>
                     </div>
 
                     <!-- Judul Utama (Diletakkan di atas sebelum identitas) -->
@@ -741,14 +787,18 @@
                 const file4 = document.getElementById('in_foto4').files[0];
                 const fileTtdGuru = document.getElementById('in_ttdGuru').files[0];
                 const fileTtdKepsek = document.getElementById('in_ttdKepsek').files[0];
+                const fileLogoDinas = document.getElementById('in_logoDinas').files[0];
+                const fileLogoSekolah = document.getElementById('in_logoSekolah').files[0];
 
-                const [imgData1, imgData2, imgData3, imgData4, imgTtdGuru, imgTtdKepsek] = await Promise.all([
+                const [imgData1, imgData2, imgData3, imgData4, imgTtdGuru, imgTtdKepsek, imgLogoDinas, imgLogoSekolah] = await Promise.all([
                     readFileAsDataURL(file1),
                     readFileAsDataURL(file2),
                     readFileAsDataURL(file3),
                     readFileAsDataURL(file4),
                     readFileAsDataURL(fileTtdGuru),
-                    readFileAsDataURL(fileTtdKepsek)
+                    readFileAsDataURL(fileTtdKepsek),
+                    readFileAsDataURL(fileLogoDinas),
+                    readFileAsDataURL(fileLogoSekolah)
                 ]);
 
                 const imgEl1 = document.getElementById('out_img1');
@@ -805,6 +855,24 @@
                 } else {
                     elTtdKepsek.classList.add('hidden');
                     elTtdKepsek.src = blankImage;
+                }
+
+                const elLogoDinas = document.getElementById('out_img_logoDinas');
+                if (imgLogoDinas) {
+                    elLogoDinas.src = imgLogoDinas;
+                    elLogoDinas.classList.remove('hidden');
+                } else {
+                    elLogoDinas.classList.add('hidden');
+                    elLogoDinas.src = blankImage;
+                }
+
+                const elLogoSekolah = document.getElementById('out_img_logoSekolah');
+                if (imgLogoSekolah) {
+                    elLogoSekolah.src = imgLogoSekolah;
+                    elLogoSekolah.classList.remove('hidden');
+                } else {
+                    elLogoSekolah.classList.add('hidden');
+                    elLogoSekolah.src = blankImage;
                 }
 
                 document.getElementById('instructionPanel').classList.add('hidden');
